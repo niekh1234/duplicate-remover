@@ -17,37 +17,42 @@ createApp({
       return;
     }
 
-    if (this.input.field1 && !this.input.field2) {
-      return (this.output = this.input.field1);
-    }
-
-    if (!this.input.field1 && this.input.field2) {
-      return (this.output = this.input.field2);
-    }
-
     this.output = null;
 
-    const f1 = this.input.field1
+    let f1 = this.input.field1
       ?.replaceAll(/(\r\n|\n|\r|-\n)/gm, ' ')
       ?.trim()
       ?.replaceAll(';', ' ')
       ?.split(' ');
 
-    const f2 = this.input.field2
+    let f2 = this.input.field2
       ?.replaceAll(/(\r\n|\n|\r|-\n)/gm, ' ')
       ?.trim()
       ?.replaceAll(';', ' ')
       ?.split(' ');
 
-    // O(n)
+    if (!f1) {
+      f1 = [];
+    }
+
+    if (!f2) {
+      f2 = [];
+    }
+
+    // O(n)?
     const hashMap: Record<string, string> = {};
+    const duplicates: string[] = [];
 
     for (const s of f1) {
+      // slightly worse perfomance but better ux, not detrimental of course as object lookups are O(1)
+      if (hashMap[s]) {
+        duplicates.push(s);
+      }
+
       hashMap[s] = s;
     }
 
     const output: string[] = Object.values(hashMap);
-    const duplicates: string[] = [];
 
     for (const s of f2) {
       if (hashMap[s]) {
@@ -58,7 +63,7 @@ createApp({
       output.push(s);
     }
 
-    // O(n)
+    // O(n)?
     const selfDuplicateHashmap: Record<string, string> = {};
     const uniqueOutput: string[] = [];
 
@@ -79,7 +84,7 @@ createApp({
   copy() {
     const textarea = document.querySelector('#output') as HTMLInputElement;
     textarea?.select();
-    textarea.setSelectionRange(0, 99999);
+    textarea?.setSelectionRange(0, 99999);
     document.execCommand('copy');
   },
 
