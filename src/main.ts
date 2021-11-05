@@ -7,6 +7,8 @@ createApp({
     field1: null,
     field2: null,
   },
+  emailInput: null,
+  emailOutput: null,
   output: null,
   duplicates: 0,
   showDuplicates: false,
@@ -97,4 +99,21 @@ createApp({
     this.showDuplicates = false;
     this.duplicates = [];
   },
+
+  getEmails() {
+    const emails = extractEmails(this.emailInput);
+
+    if (!emails) {
+      this.emailOutput = null;
+      return;
+    }
+
+    this.emailOutput = emails;
+  },
 }).mount();
+
+function extractEmails(text: string) {
+  const regex = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+/gi;
+  const matches = text.match(regex);
+  return matches ? matches.join(';') : '';
+}
