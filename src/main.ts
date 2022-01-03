@@ -13,6 +13,7 @@ createApp({
   duplicates: 0,
   showDuplicates: false,
   selectedJoinChar: ';',
+  ignoreDuplicates: false,
 
   removeDuplicates() {
     if (!this.input.field1 && !this.input.field2) {
@@ -61,7 +62,6 @@ createApp({
         duplicates.push(s);
         continue;
       }
-
       output.push(s);
     }
 
@@ -76,10 +76,26 @@ createApp({
       }
 
       selfDuplicateHashmap[s] = s;
+
       uniqueOutput.push(s);
     }
 
-    this.output = uniqueOutput.join(this.selectedJoinChar || ';');
+    console.log(this.ignoreDuplicates);
+
+    if (this.ignoreDuplicates) {
+      let out = [];
+
+      for (const s of uniqueOutput) {
+        if (!duplicates.includes(s)) {
+          out.push(s);
+        }
+      }
+
+      this.output = out.join(this.selectedJoinChar || ';');
+    } else {
+      this.output = uniqueOutput.join(this.selectedJoinChar || ';');
+    }
+
     this.duplicates = duplicates;
   },
 

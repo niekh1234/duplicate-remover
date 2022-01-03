@@ -33,19 +33,30 @@
         </section>
 
         <div class="flex flex-col mt-8">
-          <label class="flex flex-col">
-            Samenvoegteken
-            <select
-              v-model="selectedJoinChar"
-              class="p-2 mt-2 mr-auto text-sm bg-white border rounded border-grey"
-            >
-              <option value=" ">Spatie</option>
-              <option value=";">;</option>
-              <option value=",">,</option>
-              <option value="&#9;">tab</option>
-              <option value="&#10;">Nieuwe regel</option>
-            </select>
-          </label>
+          <div class="inline-flex space-x-8">
+            <label class="flex flex-col">
+              Samenvoegteken
+              <select
+                v-model="selectedJoinChar"
+                class="p-2 mt-2 mr-auto text-sm bg-white border rounded border-grey"
+              >
+                <option value=" ">Spatie</option>
+                <option value=";">;</option>
+                <option value=",">,</option>
+                <option value="&#9;">tab</option>
+                <option value="&#10;">Nieuwe regel</option>
+              </select>
+            </label>
+
+            <label>
+              <input
+                v-model="ignoreDuplicates"
+                type="checkbox"
+                class="p-2 text-sm bg-white border rounded border-grey"
+              />
+              <span class="ml-2">Dubbele niet bijvoegen</span>
+            </label>
+          </div>
 
           <button
             type="submit"
@@ -58,7 +69,7 @@
 
       <div class="w-full max-w-6xl mt-8">
         <label class="font-semibold text-grey-darkest">
-          Resultaat
+          Resultaat ({{ output?.length || 0 }})
           <textarea
             @click="copy"
             :value="output"
