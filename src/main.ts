@@ -14,6 +14,8 @@ createApp({
   showDuplicates: false,
   selectedJoinChar: ';',
   ignoreDuplicates: false,
+  onlyFirst: false,
+  total: 0,
 
   removeDuplicates() {
     if (!this.input.field1 && !this.input.field2) {
@@ -21,66 +23,59 @@ createApp({
     }
 
     this.output = null;
+    this.total = 0;
 
-    let f1 = this.input.field1
+    let wordsField1 = this.input.field1
       ?.replaceAll(/(\r\n|\n|\r|-\n)/gm, ' ')
       ?.trim()
       ?.replaceAll(';', ' ')
       ?.split(' ');
 
-    let f2 = this.input.field2
+    let wordsField2 = this.input.field2
       ?.replaceAll(/(\r\n|\n|\r|-\n)/gm, ' ')
       ?.trim()
       ?.replaceAll(';', ' ')
       ?.split(' ');
 
-    if (!f1) {
-      f1 = [];
+    if (!wordsField1) {
+      wordsField1 = [];
     }
 
-    if (!f2) {
-      f2 = [];
+    if (!wordsField2) {
+      wordsField2 = [];
     }
 
-    // O(n)?
-    const hashMap: Record<string, string> = {};
-    const duplicates: string[] = [];
+    const hashMap: { [key: string]: boolean } = {};
+    let duplicates: string[] = [];
 
-    for (const s of f1) {
-      // slightly worse perfomance but better ux, not detrimental of course as object lookups are O(1)
-      if (hashMap[s]) {
-        duplicates.push(s);
+    for (const word of wordsField1) {
+      if (hashMap[word]) {
+        duplicates.push(word);
       }
 
-      hashMap[s] = s;
+      hashMap[word] = true;
     }
 
-    const output: string[] = Object.values(hashMap);
-
-    for (const s of f2) {
-      if (hashMap[s]) {
-        duplicates.push(s);
-        continue;
-      }
-      output.push(s);
-    }
-
-    // O(n)?
-    const selfDuplicateHashmap: Record<string, string> = {};
-    const uniqueOutput: string[] = [];
-
-    for (const s of output) {
-      if (selfDuplicateHashmap[s]) {
-        duplicates.push(s);
-        continue;
+    for (const word of wordsField2) {
+      if (hashMap[word]) {
+        duplicates.push(word);
       }
 
-      selfDuplicateHashmap[s] = s;
-
-      uniqueOutput.push(s);
+      hashMap[word] = true;
     }
 
-    console.log(this.ignoreDuplicates);
+    let uniqueOutput = [];
+
+    if (this.onlyFirst) {
+      for (const word of wordsField1) {
+        if (hashMap[word]) {
+          uniqueOutput.push(word);
+          delete hashMap[word];
+        }
+      }
+    } else {
+      uniqueOutput = Object.keys(hashMap);
+    }
 
     if (this.ignoreDuplicates) {
       let out = [];
@@ -92,8 +87,10 @@ createApp({
       }
 
       this.output = out.join(this.selectedJoinChar || ';');
+      this.total = out.length;
     } else {
       this.output = uniqueOutput.join(this.selectedJoinChar || ';');
+      this.total = uniqueOutput.length;
     }
 
     this.duplicates = duplicates;
